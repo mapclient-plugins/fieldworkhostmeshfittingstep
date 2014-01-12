@@ -13,7 +13,7 @@ from fieldworkhostmeshfittingstep.mayavihostmeshfittingviewerwidget import Mayav
 
 import copy
 from fieldwork.field.tools import fitting_tools
-fitting_tools.GFF = GFF
+from fieldwork.field import geometric_field_fitter as GFF
 import numpy as np
 
 
@@ -35,7 +35,7 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
     _configDefaults['slave normal weight'] = '50.0'
     _configDefaults['max iterations'] = '10'
     _configDefaults['host sobelov discretisation'] = '[8,8,8]'
-    _configDefaults['host sobelov weight'] = '[1e-6, 1e-6, 1e-6, 1e-6, 2e-6]'
+    _configDefaults['host sobelov weight'] = '1e-5'
     _configDefaults['n closest points'] = '1'
     _configDefaults['kdtree args'] = '{}'
     _configDefaults['verbose'] = 'True'
@@ -107,6 +107,8 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
         self.hostGFUnfitted = None
         self.hostGF = None
         self.hostGFFitted = None
+        self._genHostGF = True
+        self._hostGFType = None
 
         self._widget = None
 
@@ -117,7 +119,9 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
         may be connected up to a button in a widget for example.
         '''
         # Put your execute step code here before calling the '_doneExecution' method.
+
         if self._config['GUI']=='True':
+            self._initHostGF(self._config['host element type'])
             self._widget = MayaviHostMeshFittingViewerWidget(self.data, self.slaveGFUnfitted,\
                             self.hostGFUnfitted, self._config, self._fit, self._reset)
             # self._widget._ui.registerButton.clicked.connect(self._register)
@@ -146,7 +150,7 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
         args['slave normal discretisation'] = eval(self._config['slave normal discretisation'])
         args['slave normal weight'] = float(self._config['slave normal weight'])
         args['host sobelov discretisation'] = eval(self._config['host sobelov discretisation'])
-        args['host sobelov weight'] = eval(self._config['host sobelov weight'])
+        args['host sobelov weight'] = float(self._config['host sobelov weight'])
         args['max iterations'] = int(self._config['max iterations'])
         args['slave mesh discretisation'] = eval(self._config['slave mesh discretisation'])
         args['n closest points'] = int(self._config['n closest points'])
@@ -154,16 +158,18 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
 
         return args
 
+    def _initHostGF(self, hostElementType):
+        # make host GF if one is not provided
+        if self._genHostGF:
+            print 'creating host mesh of type', hostElementType
+            self.hostGF = GFF.makeHostMesh( self.slaveGFUnfitted.get_field_parameters(),\
+                                            5.0, hostElementType )
+            self.hostGFUnfitted = copy.deepcopy(self.hostGF)
+
     def _fit(self, callback=None):
 
-        args = self._parseFitConfigs()
-
-        # make host GF if one is not provided
-        if self.hostGF==None:
-            self.hostGF = GFF.makeHostMesh( self.slaveGFUnfitted.get_field_parameters(),\
-                                            5.0, args['host element type'] )
-            self.hostGFUnfitted = copy.deepcopy(self.hostGF)
-        
+        args = self._parseFitConfigs()  
+        self._initHostGF(args['host element type'])      
         # make slave obj
         if args['fit mode']=='DPEP':
             slaveGObj = GFF.makeObjDPEP(self.slaveGF, self.data, args['slave mesh discretisation'],\
@@ -187,7 +193,7 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
             errSurface = slaveGObj(x)
             errSob = slaveSobObj(x)
             errNorm = slaveNormObj(x)*args['slave normal weight']
-            return scipy.hstack([errSurface, errSob, errNorm])
+            return np.hstack([errSurface, errSob, errNorm])
 
         # run HMF
         hostParamsOpt, slaveParamsOpt,\
@@ -203,7 +209,9 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
         self.slaveGFParamsFitted = slaveParamsOpt.copy()
         self.fitErrors = slaveGObj(slaveParamsOpt)
         self.RMSEFitted = np.sqrt((self.fitErrors**2.0).mean())
-        self.hostGFFitted = copy.deepcopy((hostGFFitted))
+        self.hostGFFitted = copy.deepcopy(self.hostGF)
+
+        # self._genHostGF = True
 
         return self.slaveGFFitted, self.slaveGFParamsFitted, self.RMSEFitted,\
                self.fitErrors, self.hostGFFitted
@@ -220,6 +228,7 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
         self.slaveGF = copy.deepcopy(self.slaveGFUnfitted)
         self.hostGFFitted = None
         self.hostGF = copy.deepcopy(self.hostGFUnfitted)
+        # self._genHostGF = True
 
     def setPortData(self, index, dataIn):
         '''
@@ -227,14 +236,6 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
         The index is the index of the port in the port list.  If there is only one
         uses port for this step then the index can be ignored.
         '''
-        if index == 0:
-            portData0 = dataIn # ju#pointcoordinates
-        elif index == 1:
-            portData1 = dataIn # ju#fieldworkmodel
-        elif index == 2:
-            portData2 = dataIn # ju#numparray1d
-        else:
-            portData3 = dataIn # ju#fieldworkmodel
 
         if index == 0:
             self.data = dataIn # ju#pointcoordinates
@@ -246,7 +247,7 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
         else:
             self.hostGF = dataIn
             self.hostGFUnfitted = copy.deepcopy(self.hostGF)
-
+            self._genHostGF = False
 
     def getPortData(self, index):
         '''

@@ -48,9 +48,11 @@ class MayaviHostMeshFittingViewerWidget(QDialog):
 
     _fitParamTableRows = ('fit mode','host element type','slave mesh discretisation',\
                           'slave sobelov discretisation','slave sobelov weight',\
-                          'slave normal discretisation','slave normal weight','max iterations',\
-                          'host sobelov discretisation','host sobelov weight','n closest points',\
-                          'kdtree args','verbose')
+                          'slave normal discretisation','slave normal weight',\
+                          'host sobelov discretisation','host sobelov weight','max iterations',\
+                          'n closest points','kdtree args','verbose')
+
+    _renderHost = False
 
     def __init__(self, data, slaveGFUnfitted, hostGFUnfitted, config, fitFunc, resetCallback, parent=None):
         '''
@@ -83,12 +85,14 @@ class MayaviHostMeshFittingViewerWidget(QDialog):
         self._objects.addObject('slave GF Fitted',\
             MayaviViewerFieldworkModel('slave GF Fitted', self._slaveGFFitted, self._GFD,\
                 renderArgs=self._slaveGFFittedRenderArgs))
-        self._objects.addObject('host GF Unfitted',\
-            MayaviViewerFieldworkModel('host GF Unfitted', self._hostGFUnfitted, self._GFD,\
-                renderArgs=self._hostGFUnfittedRenderArgs))
-        self._objects.addObject('host GF Fitted',\
-            MayaviViewerFieldworkModel('host GF Fitted', self._hostGFFitted, self._GFD,\
-                renderArgs=self._hostGFFittedRenderArgs))
+
+        if self._renderHost:
+            self._objects.addObject('host GF Unfitted',\
+                MayaviViewerFieldworkModel('host GF Unfitted', self._hostGFUnfitted, self._GFD,\
+                    renderArgs=self._hostGFUnfittedRenderArgs))
+            self._objects.addObject('host GF Fitted',\
+                MayaviViewerFieldworkModel('host GF Fitted', self._hostGFFitted, self._GFD,\
+                    renderArgs=self._hostGFFittedRenderArgs))
 
         self._makeConnections()
         self._initialiseObjectTable()
@@ -130,12 +134,14 @@ class MayaviHostMeshFittingViewerWidget(QDialog):
         self._addObjectToTable(0, 'data', self._objects.getObject('data'))
         self._addObjectToTable(1, 'slave GF Unfitted',\
             self._objects.getObject('slave GF Unfitted'))
-        self._addObjectToTable(3, 'slave GF Fitted',\
+        self._addObjectToTable(2, 'slave GF Fitted',\
             self._objects.getObject('slave GF Fitted'), checked=False)
-        self._addObjectToTable(2, 'host GF Unfitted',\
-            self._objects.getObject('host GF Unfitted'))
-        self._addObjectToTable(4, 'host GF Fitted',\
-            self._objects.getObject('host GF Fitted'), checked=False)
+
+        if self._renderHost:
+            self._addObjectToTable(3, 'host GF Unfitted',\
+                self._objects.getObject('host GF Unfitted'))
+            self._addObjectToTable(4, 'host GF Fitted',\
+                self._objects.getObject('host GF Fitted'), checked=False)
 
         self._ui.tableWidget.resizeColumnToContents(self.objectTableHeaderColumns['visible'])
         self._ui.tableWidget.resizeColumnToContents(self.objectTableHeaderColumns['type'])
@@ -208,13 +214,14 @@ class MayaviHostMeshFittingViewerWidget(QDialog):
         # update fitted GF
         slaveFittedObj = self._objects.getObject('slave GF Fitted')
         slaveFittedObj.updateGeometry(slaveGFParamsFitted, self._scene)
-        slaveFittedTableItem = self._ui.tableWidget.item(3, self.objectTableHeaderColumns['visible'])
+        slaveFittedTableItem = self._ui.tableWidget.item(2, self.objectTableHeaderColumns['visible'])
         slaveFittedTableItem.setCheckState(Qt.Checked)
 
-        hostFittedObj = self._objects.getObject('host GF Fitted')
-        hostFittedObj.updateGeometry(hostGFParamsFitted, self._scene)
-        hostFittedTableItem = self._ui.tableWidget.item(4, self.objectTableHeaderColumns['visible'])
-        hostFittedTableItem.setCheckState(Qt.Checked)
+        if self._renderHost:
+            hostFittedObj = self._objects.getObject('host GF Fitted')
+            hostFittedObj.updateGeometry(hostGFParamsFitted, self._scene)
+            hostFittedTableItem = self._ui.tableWidget.item(4, self.objectTableHeaderColumns['visible'])
+            hostFittedTableItem.setCheckState(Qt.Checked)
 
     def _fitCallback(self, output):
         """
@@ -226,28 +233,30 @@ class MayaviHostMeshFittingViewerWidget(QDialog):
         slaveFittedTableItem = self._ui.tableWidget.item(2, self.objectTableHeaderColumns['visible'])
         slaveFittedTableItem.setCheckState(Qt.Checked)
 
-        hostGFParamsFitted = output[2]
-        hostFittedObj = self._objects.getObject('host GF Fitted')
-        hostFittedObj.updateGeometry(hostGFParamsFitted, self._scene)
-        hostFittedTableItem = self._ui.tableWidget.item(2, self.objectTableHeaderColumns['visible'])
-        hostFittedTableItem.setCheckState(Qt.Checked)
+        if self._renderHost:
+            hostGFParamsFitted = output[2]
+            hostFittedObj = self._objects.getObject('host GF Fitted')
+            hostFittedObj.updateGeometry(hostGFParamsFitted, self._scene)
+            hostFittedTableItem = self._ui.tableWidget.item(4, self.objectTableHeaderColumns['visible'])
+            hostFittedTableItem.setCheckState(Qt.Checked)
 
     def _reset(self):
         self._resetCallback()
         slaveFittedObj = self._objects.getObject('slave GF Fitted')
         slaveFittedObj.updateGeometry(self._slaveGFUnfitted.field_parameters.copy(), self._scene)
-        slaveFittedTableItem = self._ui.tableWidget.item(3, self.objectTableHeaderColumns['visible'])
+        slaveFittedTableItem = self._ui.tableWidget.item(2, self.objectTableHeaderColumns['visible'])
         slaveFittedTableItem.setCheckState(Qt.Unchecked)
 
-        hostFittedObj = self._objects.getObject('host GF Fitted')
-        hostFittedObj.updateGeometry(self._hostGFUnfitted.field_parameters.copy(), self._scene)
-        hostFittedTableItem = self._ui.tableWidget.item(3, self.objectTableHeaderColumns['visible'])
-        hostFittedTableItem.setCheckState(Qt.Unchecked)
+        if self._renderHost:
+            hostFittedObj = self._objects.getObject('host GF Fitted')
+            hostFittedObj.updateGeometry(self._hostGFUnfitted.field_parameters.copy(), self._scene)
+            hostFittedTableItem = self._ui.tableWidget.item(4, self.objectTableHeaderColumns['visible'])
+            hostFittedTableItem.setCheckState(Qt.Unchecked)
 
         # clear error fields
         self._ui.RMSELineEdit.clear()
         self._ui.meanErrorLineEdit.clear()
-        self._ui.RMSELineEdit.clear()
+        self._ui.SDLineEdit.clear()
 
     def _accept(self):
         self._close()
