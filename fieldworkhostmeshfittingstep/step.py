@@ -217,7 +217,7 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
                self.fitErrors, self.hostGFFitted
 
     def _abort(self):
-        self._doneExecution()
+        # self._doneExecution()
         raise RuntimeError, 'host mesh fitting aborted'
 
     def _reset(self):
