@@ -60,7 +60,7 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
         # data weights (optional)
         self.addPort(('http://physiomeproject.org/workflow/1.0/rdf-schema#port',
                       'http://physiomeproject.org/workflow/1.0/rdf-schema#uses',
-                      'numparray1d'))
+                      'numpyarray1d'))
 
         # host mesh (optional)
         self.addPort(('http://physiomeproject.org/workflow/1.0/rdf-schema#port',
@@ -101,7 +101,7 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
         self.slaveGFUnfitted = None
         self.slaveGF = None
         self.slaveGFFitted = None
-        self.fitRMSE = None
+        self.RMSEFitted = None
         self.slaveGFParamsFitted = None
         self.fitErrors = None
         self.hostGFUnfitted = None
@@ -260,7 +260,7 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
         elif index == 5:
             return self.slaveGFParamsFitted # ju#fieldworkmodelparameters
         elif index == 6:
-            return self.fitRMSE             # float
+            return self.RMSEFitted            # float
         elif index == 7:
             return self.fitErrors           # numpyarray1d
         else:
