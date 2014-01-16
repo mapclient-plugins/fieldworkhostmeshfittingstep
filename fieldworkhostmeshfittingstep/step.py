@@ -207,7 +207,7 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
 
         self.slaveGFFitted = copy.deepcopy(self.slaveGF)
         self.slaveGFParamsFitted = slaveParamsOpt.copy()
-        self.fitErrors = slaveGObj(slaveParamsOpt)
+        self.fitErrors = np.sqrt(slaveGObj(slaveParamsOpt))
         self.RMSEFitted = np.sqrt((self.fitErrors**2.0).mean())
         self.hostGFFitted = copy.deepcopy(self.hostGF)
 
