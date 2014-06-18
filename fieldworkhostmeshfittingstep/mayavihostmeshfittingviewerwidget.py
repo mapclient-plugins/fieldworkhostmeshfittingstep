@@ -22,6 +22,7 @@ os.environ['ETS_TOOLKIT'] = 'qt4'
 
 from PySide.QtGui import QDialog, QFileDialog, QDialogButtonBox, QAbstractItemView, QTableWidgetItem
 from PySide.QtCore import Qt
+from PySide.QtCore import QThread, Signal
 
 from fieldworkhostmeshfittingstep.ui_mayavihostmeshfittingviewerwidget import Ui_Dialog
 from traits.api import HasTraits, Instance, on_trait_change, \
@@ -31,6 +32,17 @@ from mappluginutils.mayaviviewer import MayaviViewerObjectsContainer, MayaviView
     MayaviViewerFieldworkModel, colours
 
 import copy
+
+class _ExecThread(QThread):
+    update = Signal(tuple)
+
+    def __init__(self, func):
+        QThread.__init__(self)
+        self.func = func
+
+    def run(self):
+        output = self.func()
+        self.update.emit(output)
 
 class MayaviHostMeshFittingViewerWidget(QDialog):
     '''
@@ -75,6 +87,9 @@ class MayaviHostMeshFittingViewerWidget(QDialog):
         self._config = config
         self._resetCallback = resetCallback
 
+        self._worker = _ExecThread(self._fitFunc)
+        self._worker.update.connect(self._fitUpdate)
+
         # create self._objects
         self._objects = MayaviViewerObjectsContainer()
         self._objects.addObject('data', MayaviViewerDataPoints('data', self._data,\
@@ -106,7 +121,11 @@ class MayaviHostMeshFittingViewerWidget(QDialog):
         self._ui.tableWidget.itemClicked.connect(self._tableItemClicked)
         self._ui.tableWidget.itemChanged.connect(self._visibleBoxChanged)
         self._ui.screenshotSaveButton.clicked.connect(self._saveScreenShot)
-        self._ui.fitButton.clicked.connect(self._fit)
+        
+        # self._ui.fitButton.clicked.connect(self._fit)
+        self._ui.fitButton.clicked.connect(self._worker.start)
+        self._ui.fitButton.clicked.connect(self._fitLockUI)
+
         self._ui.resetButton.clicked.connect(self._reset)
         self._ui.abortButton.clicked.connect(self._abort)
         self._ui.acceptButton.clicked.connect(self._accept)
@@ -222,6 +241,44 @@ class MayaviHostMeshFittingViewerWidget(QDialog):
             hostFittedObj.updateGeometry(hostGFParamsFitted, self._scene)
             hostFittedTableItem = self._ui.tableWidget.item(4, self.objectTableHeaderColumns['visible'])
             hostFittedTableItem.setCheckState(Qt.Checked)
+
+    def _fitUpdate(self, fitOutput):
+        slaveGFFitted, slaveGFParamsFitted,\
+        RMSEFitted, errorsFitted, hostGFFitted = fitOutput
+
+        # update error fields
+        self._ui.RMSELineEdit.setText(str(RMSEFitted))
+        self._ui.meanErrorLineEdit.setText(str(errorsFitted.mean()))
+        self._ui.SDLineEdit.setText(str(errorsFitted.std()))
+
+        # update fitted GF
+        slaveFittedObj = self._objects.getObject('slave GF Fitted')
+        slaveFittedObj.updateGeometry(slaveGFParamsFitted, self._scene)
+        slaveFittedTableItem = self._ui.tableWidget.item(2, self.objectTableHeaderColumns['visible'])
+        slaveFittedTableItem.setCheckState(Qt.Checked)
+
+        if self._renderHost:
+            hostFittedObj = self._objects.getObject('host GF Fitted')
+            hostFittedObj.updateGeometry(hostGFParamsFitted, self._scene)
+            hostFittedTableItem = self._ui.tableWidget.item(4, self.objectTableHeaderColumns['visible'])
+            hostFittedTableItem.setCheckState(Qt.Checked)
+
+        # unlock reg ui
+        self._fitUnlockUI()
+
+    def _fitLockUI(self):
+        self._ui.fitParamsTableWidget.setEnabled(False)
+        self._ui.fitButton.setEnabled(False)
+        self._ui.resetButton.setEnabled(False)
+        self._ui.acceptButton.setEnabled(False)
+        self._ui.abortButton.setEnabled(False)
+
+    def _fitUnlockUI(self):
+        self._ui.fitParamsTableWidget.setEnabled(True)
+        self._ui.fitButton.setEnabled(True)
+        self._ui.resetButton.setEnabled(True)
+        self._ui.acceptButton.setEnabled(True)
+        self._ui.abortButton.setEnabled(True)
 
     def _fitCallback(self, output):
         """
