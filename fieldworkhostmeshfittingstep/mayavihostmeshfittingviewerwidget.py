@@ -219,29 +219,6 @@ class MayaviHostMeshFittingViewerWidget(QDialog):
         for name in self._objects.getObjectNames():
             self._objects.getObject(name).draw(self._scene)
 
-    def _fit(self):
-        slaveGFFitted, slaveGFParamsFitted,\
-        RMSEFitted, errorsFitted, hostGFFitted = self._fitFunc(self._fitCallback)
-        self._slaveGFFitted = copy.deepcopy(slaveGFFitted)
-        self._hostGFFitted = copy.deepcopy(hostGFFitted)
-
-        # update error fields
-        self._ui.RMSELineEdit.setText(str(RMSEFitted))
-        self._ui.meanErrorLineEdit.setText(str(errorsFitted.mean()))
-        self._ui.SDLineEdit.setText(str(errorsFitted.std()))
-
-        # update fitted GF
-        slaveFittedObj = self._objects.getObject('slave GF Fitted')
-        slaveFittedObj.updateGeometry(slaveGFParamsFitted, self._scene)
-        slaveFittedTableItem = self._ui.tableWidget.item(2, self.objectTableHeaderColumns['visible'])
-        slaveFittedTableItem.setCheckState(Qt.Checked)
-
-        if self._renderHost:
-            hostFittedObj = self._objects.getObject('host GF Fitted')
-            hostFittedObj.updateGeometry(hostGFParamsFitted, self._scene)
-            hostFittedTableItem = self._ui.tableWidget.item(4, self.objectTableHeaderColumns['visible'])
-            hostFittedTableItem.setCheckState(Qt.Checked)
-
     def _fitUpdate(self, fitOutput):
         slaveGFFitted, slaveGFParamsFitted,\
         RMSEFitted, errorsFitted, hostGFFitted = fitOutput
