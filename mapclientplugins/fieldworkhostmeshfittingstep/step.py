@@ -7,9 +7,9 @@ import os
 from PySide import QtGui
 from PySide import QtCore
 
-from mountpoints.workflowstep import WorkflowStepMountPoint
-from fieldworkhostmeshfittingstep.configuredialog import ConfigureDialog
-from fieldworkhostmeshfittingstep.mayavihostmeshfittingviewerwidget import MayaviHostMeshFittingViewerWidget
+from mapclient.mountpoints.workflowstep import WorkflowStepMountPoint
+from mapclientplugins.fieldworkhostmeshfittingstep.configuredialog import ConfigureDialog
+from mapclientplugins.fieldworkhostmeshfittingstep.mayavihostmeshfittingviewerwidget import MayaviHostMeshFittingViewerWidget
 
 import copy
 from fieldwork.field.tools import fitting_tools
@@ -238,12 +238,12 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
         '''
 
         if index == 0:
-            self.data = dataIn # ju#pointcoordinates
+            self.data = np.array(dataIn, dtype=float) # ju#pointcoordinates
         elif index == 1:
             self.slaveGF = dataIn   # ju#fieldworkmodel
             self.slaveGFUnfitted = copy.deepcopy(self.slaveGF)
         elif index == 2:
-            self.dataWeights = dataIn # numpyarray1d - dataWeights
+            self.dataWeights = np.array(dataIn, dtype=float) # numpyarray1d - dataWeights
         else:
             self.hostGF = dataIn
             self.hostGFUnfitted = copy.deepcopy(self.hostGF)
