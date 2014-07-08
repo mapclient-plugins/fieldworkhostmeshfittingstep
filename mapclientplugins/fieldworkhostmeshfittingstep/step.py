@@ -45,6 +45,7 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
         self._configured = False # A step cannot be executed until it has been configured.
         self._category = 'Fitting'
         # Add any other initialisation code here:
+        self._icon = QtGui.QImage(':/fieldworkhostmeshfittingstep/images/fieldworkhostmeshfittingicon.png')
         # Ports:
 
         # target data clouds
