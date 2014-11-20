@@ -51,7 +51,7 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
         # target data clouds
         self.addPort(('http://physiomeproject.org/workflow/1.0/rdf-schema#port',
                       'http://physiomeproject.org/workflow/1.0/rdf-schema#uses',
-                      'ju#pointcoordinates'))
+                      'http://physiomeproject.org/workflow/1.0/rdf-schema#pointcloud'))
         
         # slave mesh to fit
         self.addPort(('http://physiomeproject.org/workflow/1.0/rdf-schema#port',
