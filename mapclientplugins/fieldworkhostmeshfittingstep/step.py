@@ -61,7 +61,7 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
         # data weights (optional)
         self.addPort(('http://physiomeproject.org/workflow/1.0/rdf-schema#port',
                       'http://physiomeproject.org/workflow/1.0/rdf-schema#uses',
-                      'numpyarray1d'))
+                      'numpy#array1d'))
 
         # host mesh (optional)
         self.addPort(('http://physiomeproject.org/workflow/1.0/rdf-schema#port',
@@ -81,12 +81,12 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
         # fitted RMS error
         self.addPort(('http://physiomeproject.org/workflow/1.0/rdf-schema#port',
                       'http://physiomeproject.org/workflow/1.0/rdf-schema#provides',
-                      'float'))
+                      'python#float'))
         
         # fitted error distance for each data point
         self.addPort(('http://physiomeproject.org/workflow/1.0/rdf-schema#port',
                       'http://physiomeproject.org/workflow/1.0/rdf-schema#provides',
-                      'numpyarray1d'))
+                      'numpy#array1d'))
         
         # fitted host mesh
         self.addPort(('http://physiomeproject.org/workflow/1.0/rdf-schema#port',
