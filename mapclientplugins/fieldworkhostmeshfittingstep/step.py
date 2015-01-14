@@ -94,7 +94,7 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
                       'ju#fieldworkmodel'))
         
         self._config = {}
-        for k, v in self._configDefaults.items():
+        for k, v in list(self._configDefaults.items()):
             self._config[k] = v
 
         self.data = None
@@ -162,7 +162,7 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
     def _initHostGF(self, hostElementType):
         # make host GF if one is not provided
         if self._genHostGF:
-            print 'creating host mesh of type', hostElementType
+            print('creating host mesh of type', hostElementType)
             self.hostGF = GFF.makeHostMesh( self.slaveGFUnfitted.get_field_parameters(),\
                                             5.0, hostElementType )
             self.hostGFUnfitted = copy.deepcopy(self.hostGF)
@@ -219,7 +219,7 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
 
     def _abort(self):
         # self._doneExecution()
-        raise RuntimeError, 'host mesh fitting aborted'
+        raise RuntimeError('host mesh fitting aborted')
 
     def _reset(self):
         self.slaveGFFitted = None
@@ -310,7 +310,7 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
         configuration_file = os.path.join(location, self.getIdentifier() + '.conf')
         conf = QtCore.QSettings(configuration_file, QtCore.QSettings.IniFormat)
         conf.beginGroup('config')
-        for k in self._config.keys():
+        for k in list(self._config.keys()):
             conf.setValue(k, self._config[k])
         # conf.setValue('identifier', self._config['identifier'])
         # conf.setValue('GUI', self._config['GUI'])
@@ -341,7 +341,7 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
         conf = QtCore.QSettings(configuration_file, QtCore.QSettings.IniFormat)
         conf.beginGroup('config')
 
-        for k, v in self._configDefaults.items():
+        for k, v in list(self._configDefaults.items()):
             self._config[k] = conf.value(k, v)
         # self._config['identifier'] = conf.value('identifier', '')
         # self._config['GUI'] = conf.value('GUI', 'True')

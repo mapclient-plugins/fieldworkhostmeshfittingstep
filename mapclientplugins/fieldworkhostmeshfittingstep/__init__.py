@@ -19,5 +19,8 @@ This file is part of MAP Client. (http://launchpad.net/mapclient)
 """
 __version__ = '0.1.0'
 __author__ = 'Ju Zhang'
+__stepname__ = 'Fieldwork Host Mesh Fitting'
+__location__ = 'https://github.com/mapclient-plugins/fieldworkhostmeshfittingstep/archive/master.zip'
+
 from mapclientplugins.fieldworkhostmeshfittingstep import step
 import mapclientplugins.fieldworkhostmeshfittingstep.resources_rc
