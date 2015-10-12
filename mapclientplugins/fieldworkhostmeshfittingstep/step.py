@@ -123,7 +123,7 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
 
         if self._config['GUI']=='True':
             self._initHostGF(self._config['host element type'])
-            self._widget = MayaviHostMeshFittingViewerWidget(self.data, self.slaveGFUnfitted,\
+            self._widget = MayaviHostMeshFittingViewerWidget(self.data, self.slaveGFUnfitted,
                             self.hostGFUnfitted, self._config, self._fit, self._reset)
             # self._widget._ui.registerButton.clicked.connect(self._register)
             self._widget._ui.acceptButton.clicked.connect(self._doneExecution)
@@ -173,19 +173,19 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
         self._initHostGF(args['host element type'])      
         # make slave obj
         if args['fit mode']=='DPEP':
-            slaveGObj = GFF.makeObjDPEP(self.slaveGF, self.data, args['slave mesh discretisation'],\
-                            nClosestPoints=args['n closest points'],\
+            slaveGObj = GFF.makeObjDPEP(self.slaveGF, self.data, args['slave mesh discretisation'],
+                            nClosestPoints=args['n closest points'],
                             treeArgs=args['kdtree args'])
         elif args['fit mode']=='EPDP':
-            slaveGObj = GFF.makeObjEPDP(self.slaveGF, self.data, args['slave mesh discretisation'],\
-                            nClosestPoints=args['n closest points'],\
+            slaveGObj = GFF.makeObjEPDP(self.slaveGF, self.data, args['slave mesh discretisation'],
+                            nClosestPoints=args['n closest points'],
                             treeArgs=args['kdtree args'])
         elif args['fit mode']=='2way':   
-            slaveGObj = GFF.makeObj2Way(self.slaveGF, self.data, args['slave mesh discretisation'],\
-                            nClosestPoints=args['n closest points'],\
+            slaveGObj = GFF.makeObj2Way(self.slaveGF, self.data, args['slave mesh discretisation'],
+                            nClosestPoints=args['n closest points'],
                             treeArgs=args['kdtree args'])
         
-        slaveSobObj = GFF.makeSobelovPenalty2D( self.slaveGF, args['slave sobelov discretisation'],\
+        slaveSobObj = GFF.makeSobelovPenalty2D( self.slaveGF, args['slave sobelov discretisation'],
                                                 args['slave sobelov weight'] )
         slaveNormalSmoother = GFF.normalSmoother2( self.slaveGF.ensemble_field_function.flatten()[0] )
         slaveNormObj = slaveNormalSmoother.makeObj(args['slave normal discretisation'])
@@ -198,9 +198,10 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
 
         # run HMF
         hostParamsOpt, slaveParamsOpt,\
-        slaveXi, RMSEFitted = fitting_tools.hostMeshFit( self.hostGF, self.slaveGF, slaveObj,\
-                                maxIt=args['max iterations'], sobD=args['host sobelov discretisation'],\
-                                sobW=args['host sobelov weight'], verbose=args['verbose'] )
+        slaveXi, RMSEFitted = fitting_tools.hostMeshFit( self.hostGF, self.slaveGF, slaveObj,
+                                maxIt=args['max iterations'], sobD=args['host sobelov discretisation'],
+                                sobW=args['host sobelov weight'], verbose=args['verbose'],
+                                xtol=1e-6)
 
         # prepare outputs
         self.slaveGF.set_field_parameters(slaveParamsOpt)
