@@ -198,10 +198,14 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
 
         # run HMF
         hostParamsOpt, slaveParamsOpt,\
-        slaveXi, RMSEFitted = fitting_tools.hostMeshFit( self.hostGF, self.slaveGF, slaveObj,
-                                maxIt=args['max iterations'], sobD=args['host sobelov discretisation'],
-                                sobW=args['host sobelov weight'], verbose=args['verbose'],
-                                xtol=1e-6)
+        slaveXi, RMSEFitted = fitting_tools.hostMeshFitMulti(
+                                self.hostGF, self.slaveGF, slaveObj,
+                                maxIt=args['max iterations'],
+                                sobD=args['host sobelov discretisation'],
+                                sobW=args['host sobelov weight'],
+                                verbose=args['verbose'],
+                                xtol=1e-6,
+                                )
 
         # prepare outputs
         self.slaveGF.set_field_parameters(slaveParamsOpt)
