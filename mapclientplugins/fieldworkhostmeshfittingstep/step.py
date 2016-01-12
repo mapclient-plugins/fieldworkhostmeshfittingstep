@@ -3,9 +3,9 @@
 MAP Client Plugin Step
 '''
 import os
+import json
 
 from PySide import QtGui
-from PySide import QtCore
 
 from mapclient.mountpoints.workflowstep import WorkflowStepMountPoint
 from mapclientplugins.fieldworkhostmeshfittingstep.configuredialog import ConfigureDialog
@@ -304,66 +304,19 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
         '''
         self._config['identifier'] = identifier
 
-    def serialize(self, location):
+    def serialize(self):
         '''
-        Add code to serialize this step to disk.  The filename should
-        use the step identifier (received from getIdentifier()) to keep it
-        unique within the workflow.  The suggested name for the file on
-        disk is:
-            filename = getIdentifier() + '.conf'
+        Add code to serialize this step to disk. Returns a json string for
+        mapclient to serialise.
         '''
-        configuration_file = os.path.join(location, self.getIdentifier() + '.conf')
-        conf = QtCore.QSettings(configuration_file, QtCore.QSettings.IniFormat)
-        conf.beginGroup('config')
-        for k in list(self._config.keys()):
-            conf.setValue(k, self._config[k])
-        # conf.setValue('identifier', self._config['identifier'])
-        # conf.setValue('GUI', self._config['GUI'])
-        # conf.setValue('fit mode', self._config['fit mode'])
-        # conf.setValue('host element type', self._config['host element type'])
-        # conf.setValue('slave mesh discretisation', self._config['slave mesh discretisation'])
-        # conf.setValue('slave sobelov discretisation', self._config['slave sobelov discretisation'])
-        # conf.setValue('slave sobelov weight', self._config['slave sobelov weight'])
-        # conf.setValue('slave normal discretisation', self._config['slave normal discretisation'])
-        # conf.setValue('slave normal weight', self._config['slave normal weight'])
-        # conf.setValue('max iterations', self._config['max iterations'])
-        # conf.setValue('host sobelov discretisation', self._config['host sobelov discretisation'])
-        # conf.setValue('host sobelov weight', self._config['host sobelov weight'])
-        # conf.setValue('n closest points', self._config['n closest points'])
-        # conf.setValue('kdtree args', self._config['kdtree args'])
-        # conf.setValue('verbose', self._config['verbose'])
-        conf.endGroup()
+        return json.dumps(self._config, default=lambda o: o.__dict__, sort_keys=True, indent=4)
 
-
-    def deserialize(self, location):
+    def deserialize(self, string):
         '''
-        Add code to deserialize this step from disk.  As with the serialize 
-        method the filename should use the step identifier.  Obviously the 
-        filename used here should be the same as the one used by the
-        serialize method.
+        Add code to deserialize this step from disk. Parses a json string
+        given by mapclient
         '''
-        configuration_file = os.path.join(location, self.getIdentifier() + '.conf')
-        conf = QtCore.QSettings(configuration_file, QtCore.QSettings.IniFormat)
-        conf.beginGroup('config')
-
-        for k, v in list(self._configDefaults.items()):
-            self._config[k] = conf.value(k, v)
-        # self._config['identifier'] = conf.value('identifier', '')
-        # self._config['GUI'] = conf.value('GUI', 'True')
-        # self._config['fit mode'] = conf.value('fit mode', 'DPEP')
-        # self._config['host element type'] = conf.value('host element type', 'quad444')
-        # self._config['slave mesh discretisation'] = conf.value('slave mesh discretisation', '[10,10]')
-        # self._config['slave sobelov discretisation'] = conf.value('slave sobelov discretisation', '[8,8]')
-        # self._config['slave sobelov weight'] = conf.value('slave sobelov weight', '[1e-6, 1e-6, 1e-6, 1e-6, 2e-6]')
-        # self._config['slave normal discretisation'] = conf.value('slave normal discretisation', '8')
-        # self._config['slave normal weight'] = conf.value('slave normal weight', '50.0')
-        # self._config['max iterations'] = conf.value('max iterations', '10')
-        # self._config['host sobelov discretisation'] = conf.value('host sobelov discretisation', '[8,8,8]')
-        # self._config['host sobelov weight'] = conf.value('host sobelov weight', '[1e-6, 1e-6, 1e-6, 1e-6, 2e-6]')
-        # self._config['n closest points'] = conf.value('n closest points', '1')
-        # self._config['kdtree args'] = conf.value('kdtree args', '{}')
-        # self._config['verbose'] = conf.value('verbose', 'True')
-        conf.endGroup()
+        self._config.update(json.loads(string))
 
         d = ConfigureDialog()
         d.identifierOccursCount = self._identifierOccursCount
