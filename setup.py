@@ -12,7 +12,7 @@ requires = readfile("requirements.txt", split=True)
 license = readfile("LICENSE")
 
 setup(name=u'mapclientplugins.fieldworkhostmeshfittingstep',
-    version='1.0.0',
+    version='1.0.1',
     description='',
     long_description=''.join(readme) + license,
     classifiers=[

@@ -17,10 +17,10 @@ This file is part of MAP Client. (http://launchpad.net/mapclient)
     You should have received a copy of the GNU General Public License
     along with MAP Client.  If not, see <http://www.gnu.org/licenses/>..
 """
-__version__ = '1.0.0'
+__version__ = '1.0.1'
 __author__ = 'Ju Zhang'
 __stepname__ = 'Fieldwork Host Mesh Fitting'
-__location__ = 'https://github.com/mapclient-plugins/fieldworkhostmeshfittingstep/archive/v1.0.0.zip'
+__location__ = 'https://github.com/mapclient-plugins/fieldworkhostmeshfittingstep/archive/v1.0.1zip'
 
 from mapclientplugins.fieldworkhostmeshfittingstep import step
 import mapclientplugins.fieldworkhostmeshfittingstep.resources_rc
