@@ -14,7 +14,7 @@ license = readfile("LICENSE")
 setup(name=u'mapclientplugins.fieldworkhostmeshfittingstep',
     version='1.0.1',
     description='',
-    long_description=''.join(readme) + license,
+    long_description='\n'.join(readme) + license,
     classifiers=[
       "Development Status :: 3 - Alpha",
       "License :: OSI Approved :: Apache Software License",
