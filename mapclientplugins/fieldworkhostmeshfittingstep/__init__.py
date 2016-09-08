@@ -20,7 +20,7 @@ This file is part of MAP Client. (http://launchpad.net/mapclient)
 __version__ = '1.0.1'
 __author__ = 'Ju Zhang'
 __stepname__ = 'Fieldwork Host Mesh Fitting'
-__location__ = 'https://github.com/mapclient-plugins/fieldworkhostmeshfittingstep/archive/v1.0.1zip'
+__location__ = 'https://github.com/mapclient-plugins/fieldworkhostmeshfittingstep/archive/v1.0.1.zip'
 
 from mapclientplugins.fieldworkhostmeshfittingstep import step
 import mapclientplugins.fieldworkhostmeshfittingstep.resources_rc
