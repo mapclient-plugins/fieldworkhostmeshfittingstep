@@ -18,6 +18,7 @@ This file is part of MAP Client. (http://launchpad.net/mapclient)
     along with MAP Client.  If not, see <http://www.gnu.org/licenses/>..
 '''
 import os
+
 os.environ['ETS_TOOLKIT'] = 'qt4'
 
 from PySide2.QtWidgets import QDialog, QAbstractItemView, QTableWidgetItem
@@ -28,10 +29,11 @@ from mapclientplugins.fieldworkhostmeshfittingstep.ui_mayavihostmeshfittingviewe
 from traits.api import HasTraits, Instance, on_trait_change, \
     Int, Dict
 
-from gias2.mappluginutils.mayaviviewer import MayaviViewerObjectsContainer, MayaviViewerDataPoints,\
+from gias2.mappluginutils.mayaviviewer import MayaviViewerObjectsContainer, MayaviViewerDataPoints, \
     MayaviViewerFieldworkModel, colours
 
 import copy
+
 
 class _ExecThread(QThread):
     update = Signal(tuple)
@@ -44,25 +46,26 @@ class _ExecThread(QThread):
         output = self.func()
         self.update.emit(output)
 
+
 class MayaviHostMeshFittingViewerWidget(QDialog):
     '''
     Configure dialog to present the user with the options to configure this step.
     '''
     defaultColor = colours['bone']
-    objectTableHeaderColumns = {'visible':0, 'type':1}
-    backgroundColour = (0.0,0.0,0.0)
-    _dataRenderArgs = {'mode':'point', 'scale_factor':0.1, 'color':(0,1,0)}
-    _slaveGFUnfittedRenderArgs = {'color':(1,0,0)}
-    _slaveGFFittedRenderArgs = {'color':(1,1,0)}
-    _hostGFUnfittedRenderArgs = {'color':(1,0,0)}
-    _hostGFFittedRenderArgs = {'color':(1,1,0)}
-    _GFD = [15,15]
+    objectTableHeaderColumns = {'visible': 0, 'type': 1}
+    backgroundColour = (0.0, 0.0, 0.0)
+    _dataRenderArgs = {'mode': 'point', 'scale_factor': 0.1, 'color': (0, 1, 0)}
+    _slaveGFUnfittedRenderArgs = {'color': (1, 0, 0)}
+    _slaveGFFittedRenderArgs = {'color': (1, 1, 0)}
+    _hostGFUnfittedRenderArgs = {'color': (1, 0, 0)}
+    _hostGFFittedRenderArgs = {'color': (1, 1, 0)}
+    _GFD = [15, 15]
 
-    _fitParamTableRows = ('fit mode','host element type','slave mesh discretisation',\
-                          'slave sobelov discretisation','slave sobelov weight',\
-                          'slave normal discretisation','slave normal weight',\
-                          'host sobelov discretisation','host sobelov weight','max iterations',\
-                          'n closest points','kdtree args','verbose')
+    _fitParamTableRows = ('fit mode', 'host element type', 'slave mesh discretisation', \
+                          'slave sobelov discretisation', 'slave sobelov weight', \
+                          'slave normal discretisation', 'slave normal weight', \
+                          'host sobelov discretisation', 'host sobelov weight', 'max iterations', \
+                          'n closest points', 'kdtree args', 'verbose')
 
     _renderHost = False
 
@@ -92,22 +95,22 @@ class MayaviHostMeshFittingViewerWidget(QDialog):
 
         # create self._objects
         self._objects = MayaviViewerObjectsContainer()
-        self._objects.addObject('data', MayaviViewerDataPoints('data', self._data,\
-            renderArgs=self._dataRenderArgs))
-        self._objects.addObject('slave GF Unfitted',\
-            MayaviViewerFieldworkModel('slave GF Unfitted', self._slaveGFUnfitted, self._GFD,\
-                renderArgs=self._slaveGFUnfittedRenderArgs))
-        self._objects.addObject('slave GF Fitted',\
-            MayaviViewerFieldworkModel('slave GF Fitted', self._slaveGFFitted, self._GFD,\
-                renderArgs=self._slaveGFFittedRenderArgs))
+        self._objects.addObject('data', MayaviViewerDataPoints('data', self._data, \
+                                                               renderArgs=self._dataRenderArgs))
+        self._objects.addObject('slave GF Unfitted', \
+                                MayaviViewerFieldworkModel('slave GF Unfitted', self._slaveGFUnfitted, self._GFD, \
+                                                           renderArgs=self._slaveGFUnfittedRenderArgs))
+        self._objects.addObject('slave GF Fitted', \
+                                MayaviViewerFieldworkModel('slave GF Fitted', self._slaveGFFitted, self._GFD, \
+                                                           renderArgs=self._slaveGFFittedRenderArgs))
 
         if self._renderHost:
-            self._objects.addObject('host GF Unfitted',\
-                MayaviViewerFieldworkModel('host GF Unfitted', self._hostGFUnfitted, self._GFD,\
-                    renderArgs=self._hostGFUnfittedRenderArgs))
-            self._objects.addObject('host GF Fitted',\
-                MayaviViewerFieldworkModel('host GF Fitted', self._hostGFFitted, self._GFD,\
-                    renderArgs=self._hostGFFittedRenderArgs))
+            self._objects.addObject('host GF Unfitted', \
+                                    MayaviViewerFieldworkModel('host GF Unfitted', self._hostGFUnfitted, self._GFD, \
+                                                               renderArgs=self._hostGFUnfittedRenderArgs))
+            self._objects.addObject('host GF Fitted', \
+                                    MayaviViewerFieldworkModel('host GF Fitted', self._hostGFFitted, self._GFD, \
+                                                               renderArgs=self._hostGFFittedRenderArgs))
 
         self._makeConnections()
         self._initialiseObjectTable()
@@ -121,7 +124,7 @@ class MayaviHostMeshFittingViewerWidget(QDialog):
         self._ui.tableWidget.itemClicked.connect(self._tableItemClicked)
         self._ui.tableWidget.itemChanged.connect(self._visibleBoxChanged)
         self._ui.screenshotSaveButton.clicked.connect(self._saveScreenShot)
-        
+
         # self._ui.fitButton.clicked.connect(self._fit)
         self._ui.fitButton.clicked.connect(self._worker.start)
         self._ui.fitButton.clicked.connect(self._fitLockUI)
@@ -149,18 +152,18 @@ class MayaviHostMeshFittingViewerWidget(QDialog):
         self._ui.tableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self._ui.tableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
         self._ui.tableWidget.setSelectionMode(QAbstractItemView.SingleSelection)
-        
+
         self._addObjectToTable(0, 'data', self._objects.getObject('data'))
-        self._addObjectToTable(1, 'slave GF Unfitted',\
-            self._objects.getObject('slave GF Unfitted'))
-        self._addObjectToTable(2, 'slave GF Fitted',\
-            self._objects.getObject('slave GF Fitted'), checked=False)
+        self._addObjectToTable(1, 'slave GF Unfitted', \
+                               self._objects.getObject('slave GF Unfitted'))
+        self._addObjectToTable(2, 'slave GF Fitted', \
+                               self._objects.getObject('slave GF Fitted'), checked=False)
 
         if self._renderHost:
-            self._addObjectToTable(3, 'host GF Unfitted',\
-                self._objects.getObject('host GF Unfitted'))
-            self._addObjectToTable(4, 'host GF Fitted',\
-                self._objects.getObject('host GF Fitted'), checked=False)
+            self._addObjectToTable(3, 'host GF Unfitted', \
+                                   self._objects.getObject('host GF Unfitted'))
+            self._addObjectToTable(4, 'host GF Fitted', \
+                                   self._objects.getObject('host GF Fitted'), checked=False)
 
         self._ui.tableWidget.resizeColumnToContents(self.objectTableHeaderColumns['visible'])
         self._ui.tableWidget.resizeColumnToContents(self.objectTableHeaderColumns['type'])
@@ -175,15 +178,15 @@ class MayaviHostMeshFittingViewerWidget(QDialog):
         else:
             tableItem.setCheckState(Qt.Unchecked)
 
-        self._ui.tableWidget.setItem(row, self.objectTableHeaderColumns['visible'],\
-            tableItem)
-        self._ui.tableWidget.setItem(row, self.objectTableHeaderColumns['type'],\
-            QTableWidgetItem(typeName))
+        self._ui.tableWidget.setItem(row, self.objectTableHeaderColumns['visible'], \
+                                     tableItem)
+        self._ui.tableWidget.setItem(row, self.objectTableHeaderColumns['type'], \
+                                     QTableWidgetItem(typeName))
 
     def _tableItemClicked(self):
         selectedRow = self._ui.tableWidget.currentRow()
-        self.selectedObjectName = self._ui.tableWidget.item(selectedRow,\
-            self.objectTableHeaderColumns['visible']).text()
+        self.selectedObjectName = self._ui.tableWidget.item(selectedRow, \
+                                                            self.objectTableHeaderColumns['visible']).text()
         self._populateScalarsDropDown(self.selectedObjectName)
         print(selectedRow)
         print(self.selectedObjectName)
@@ -191,10 +194,10 @@ class MayaviHostMeshFittingViewerWidget(QDialog):
     def _visibleBoxChanged(self, tableItem):
 
         # checked changed item is actually the checkbox
-        if tableItem.column()==self.objectTableHeaderColumns['visible']:
+        if tableItem.column() == self.objectTableHeaderColumns['visible']:
             # get visible status
             name = tableItem.text()
-            visible = tableItem.checkState().name=='Checked'
+            visible = tableItem.checkState().name == 'Checked'
 
             print('visibleboxchanged name', name)
             print('visibleboxchanged visible', visible)
@@ -220,7 +223,7 @@ class MayaviHostMeshFittingViewerWidget(QDialog):
             self._objects.getObject(name).draw(self._scene)
 
     def _fitUpdate(self, fitOutput):
-        slaveGFFitted, slaveGFParamsFitted,\
+        slaveGFFitted, slaveGFParamsFitted, \
         RMSEFitted, errorsFitted, hostGFFitted = fitOutput
 
         # update error fields
@@ -313,7 +316,7 @@ class MayaviHostMeshFittingViewerWidget(QDialog):
         for r in range(self._ui.tableWidget.rowCount()):
             tableItem = self._ui.tableWidget.item(r, self.objectTableHeaderColumns['visible'])
             name = tableItem.text()
-            visible = tableItem.checkState().name=='Checked'
+            visible = tableItem.checkState().name == 'Checked'
             obj = self._objects.getObject(name)
             print(obj.name)
             if obj.sceneObject:
@@ -327,9 +330,9 @@ class MayaviHostMeshFittingViewerWidget(QDialog):
         filename = self._ui.screenshotFilenameLineEdit.text()
         width = int(self._ui.screenshotPixelXLineEdit.text())
         height = int(self._ui.screenshotPixelYLineEdit.text())
-        self._scene.mlab.savefig( filename, size=( width, height ) )
+        self._scene.mlab.savefig(filename, size=(width, height))
 
-    #================================================================#
+    # ================================================================#
     @on_trait_change('scene.activated')
     def testPlot(self):
         # This function is called when the view is opened. We don't
@@ -340,7 +343,5 @@ class MayaviHostMeshFittingViewerWidget(QDialog):
         # We can do normal mlab calls on the embedded scene.
         self._scene.mlab.test_points3d()
 
-
     # def _saveImage_fired( self ):
     #     self.scene.mlab.savefig( str(self.saveImageFilename), size=( int(self.saveImageWidth), int(self.saveImageLength) ) )
-        
