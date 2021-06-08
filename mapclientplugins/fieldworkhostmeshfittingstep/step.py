@@ -1,15 +1,15 @@
-
 '''
 MAP Client Plugin Step
 '''
 import os
 import json
 
-from PySide import QtGui
+from PySide2 import QtGui
 
 from mapclient.mountpoints.workflowstep import WorkflowStepMountPoint
 from mapclientplugins.fieldworkhostmeshfittingstep.configuredialog import ConfigureDialog
-from mapclientplugins.fieldworkhostmeshfittingstep.mayavihostmeshfittingviewerwidget import MayaviHostMeshFittingViewerWidget
+from mapclientplugins.fieldworkhostmeshfittingstep.mayavihostmeshfittingviewerwidget import \
+    MayaviHostMeshFittingViewerWidget
 
 import copy
 from gias2.fieldwork.field.tools import fitting_tools
@@ -42,7 +42,7 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
 
     def __init__(self, location):
         super(FieldworkHostMeshFittingStep, self).__init__('Fieldwork Host Mesh Fitting', location)
-        self._configured = False # A step cannot be executed until it has been configured.
+        self._configured = False  # A step cannot be executed until it has been configured.
         self._category = 'Fitting'
         # Add any other initialisation code here:
         self._icon = QtGui.QImage(':/fieldworkhostmeshfittingstep/images/fieldworkhostmeshfittingicon.png')
@@ -52,12 +52,12 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
         self.addPort(('http://physiomeproject.org/workflow/1.0/rdf-schema#port',
                       'http://physiomeproject.org/workflow/1.0/rdf-schema#uses',
                       'http://physiomeproject.org/workflow/1.0/rdf-schema#pointcloud'))
-        
+
         # slave mesh to fit
         self.addPort(('http://physiomeproject.org/workflow/1.0/rdf-schema#port',
                       'http://physiomeproject.org/workflow/1.0/rdf-schema#uses',
                       'ju#fieldworkmodel'))
-        
+
         # data weights (optional)
         self.addPort(('http://physiomeproject.org/workflow/1.0/rdf-schema#port',
                       'http://physiomeproject.org/workflow/1.0/rdf-schema#uses',
@@ -67,32 +67,32 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
         self.addPort(('http://physiomeproject.org/workflow/1.0/rdf-schema#port',
                       'http://physiomeproject.org/workflow/1.0/rdf-schema#uses',
                       'ju#fieldworkmodel'))
-        
+
         # fitted slave mesh
         self.addPort(('http://physiomeproject.org/workflow/1.0/rdf-schema#port',
                       'http://physiomeproject.org/workflow/1.0/rdf-schema#provides',
                       'ju#fieldworkmodel'))
-        
+
         # fitted slave mesh parameters
         self.addPort(('http://physiomeproject.org/workflow/1.0/rdf-schema#port',
                       'http://physiomeproject.org/workflow/1.0/rdf-schema#provides',
                       'ju#fieldworkmodelparameters'))
-        
+
         # fitted RMS error
         self.addPort(('http://physiomeproject.org/workflow/1.0/rdf-schema#port',
                       'http://physiomeproject.org/workflow/1.0/rdf-schema#provides',
                       'python#float'))
-        
+
         # fitted error distance for each data point
         self.addPort(('http://physiomeproject.org/workflow/1.0/rdf-schema#port',
                       'http://physiomeproject.org/workflow/1.0/rdf-schema#provides',
                       'numpy#array1d'))
-        
+
         # fitted host mesh
         self.addPort(('http://physiomeproject.org/workflow/1.0/rdf-schema#port',
                       'http://physiomeproject.org/workflow/1.0/rdf-schema#provides',
                       'ju#fieldworkmodel'))
-        
+
         self._config = {}
         for k, v in list(self._configDefaults.items()):
             self._config[k] = v
@@ -121,10 +121,10 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
         '''
         # Put your execute step code here before calling the '_doneExecution' method.
 
-        if self._config['GUI']=='True':
+        if self._config['GUI'] == 'True':
             self._initHostGF(self._config['host element type'])
             self._widget = MayaviHostMeshFittingViewerWidget(self.data, self.slaveGFUnfitted,
-                            self.hostGFUnfitted, self._config, self._fit, self._reset)
+                                                             self.hostGFUnfitted, self._config, self._fit, self._reset)
             # self._widget._ui.registerButton.clicked.connect(self._register)
             self._widget._ui.acceptButton.clicked.connect(self._doneExecution)
             self._widget._ui.abortButton.clicked.connect(self._abort)
@@ -132,7 +132,7 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
             self._widget.setModal(True)
             self._setCurrentWidget(self._widget)
 
-        elif self._config['GUI']=='False':
+        elif self._config['GUI'] == 'False':
             self._fit()
             self.slaveGFFitted = copy.deepcopy(self.slaveGF)
             self._doneExecution()
@@ -163,49 +163,49 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
         # make host GF if one is not provided
         if self._genHostGF:
             print('creating host mesh of type', hostElementType)
-            self.hostGF = GFF.makeHostMesh( self.slaveGFUnfitted.get_field_parameters(),\
-                                            5.0, hostElementType )
+            self.hostGF = GFF.makeHostMesh(self.slaveGFUnfitted.get_field_parameters(), \
+                                           5.0, hostElementType)
             self.hostGFUnfitted = copy.deepcopy(self.hostGF)
 
     def _fit(self, callback=None):
 
-        args = self._parseFitConfigs()  
-        self._initHostGF(args['host element type'])      
+        args = self._parseFitConfigs()
+        self._initHostGF(args['host element type'])
         # make slave obj
-        if args['fit mode']=='DPEP':
+        if args['fit mode'] == 'DPEP':
             slaveGObj = GFF.makeObjDPEP(self.slaveGF, self.data, args['slave mesh discretisation'],
-                            nClosestPoints=args['n closest points'],
-                            treeArgs=args['kdtree args'])
-        elif args['fit mode']=='EPDP':
+                                        nClosestPoints=args['n closest points'],
+                                        treeArgs=args['kdtree args'])
+        elif args['fit mode'] == 'EPDP':
             slaveGObj = GFF.makeObjEPDP(self.slaveGF, self.data, args['slave mesh discretisation'],
-                            nClosestPoints=args['n closest points'],
-                            treeArgs=args['kdtree args'])
-        elif args['fit mode']=='2way':   
+                                        nClosestPoints=args['n closest points'],
+                                        treeArgs=args['kdtree args'])
+        elif args['fit mode'] == '2way':
             slaveGObj = GFF.makeObj2Way(self.slaveGF, self.data, args['slave mesh discretisation'],
-                            nClosestPoints=args['n closest points'],
-                            treeArgs=args['kdtree args'])
-        
-        slaveSobObj = GFF.makeSobelovPenalty2D( self.slaveGF, args['slave sobelov discretisation'],
-                                                args['slave sobelov weight'] )
-        slaveNormalSmoother = GFF.normalSmoother2( self.slaveGF.ensemble_field_function.flatten()[0] )
+                                        nClosestPoints=args['n closest points'],
+                                        treeArgs=args['kdtree args'])
+
+        slaveSobObj = GFF.makeSobelovPenalty2D(self.slaveGF, args['slave sobelov discretisation'],
+                                               args['slave sobelov weight'])
+        slaveNormalSmoother = GFF.normalSmoother2(self.slaveGF.ensemble_field_function.flatten()[0])
         slaveNormObj = slaveNormalSmoother.makeObj(args['slave normal discretisation'])
-        
-        def slaveObj( x ):
+
+        def slaveObj(x):
             errSurface = slaveGObj(x)
             errSob = slaveSobObj(x)
-            errNorm = slaveNormObj(x)*args['slave normal weight']
+            errNorm = slaveNormObj(x) * args['slave normal weight']
             return np.hstack([errSurface, errSob, errNorm])
 
         # run HMF
-        hostParamsOpt, slaveParamsOpt,\
+        hostParamsOpt, slaveParamsOpt, \
         slaveXi, RMSEFitted = fitting_tools.hostMeshFitMulti(
-                                self.hostGF, self.slaveGF, slaveObj,
-                                maxIt=args['max iterations'],
-                                sobD=args['host sobelov discretisation'],
-                                sobW=args['host sobelov weight'],
-                                verbose=args['verbose'],
-                                xtol=1e-6,
-                                )
+            self.hostGF, self.slaveGF, slaveObj,
+            maxIt=args['max iterations'],
+            sobD=args['host sobelov discretisation'],
+            sobW=args['host sobelov weight'],
+            verbose=args['verbose'],
+            xtol=1e-6,
+        )
 
         # prepare outputs
         self.slaveGF.set_field_parameters(slaveParamsOpt)
@@ -214,12 +214,12 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
         self.slaveGFFitted = copy.deepcopy(self.slaveGF)
         self.slaveGFParamsFitted = slaveParamsOpt.copy()
         self.fitErrors = np.sqrt(slaveGObj(slaveParamsOpt))
-        self.RMSEFitted = np.sqrt((self.fitErrors**2.0).mean())
+        self.RMSEFitted = np.sqrt((self.fitErrors ** 2.0).mean())
         self.hostGFFitted = copy.deepcopy(self.hostGF)
 
         # self._genHostGF = True
 
-        return self.slaveGFFitted, self.slaveGFParamsFitted, self.RMSEFitted,\
+        return self.slaveGFFitted, self.slaveGFParamsFitted, self.RMSEFitted, \
                self.fitErrors, self.hostGFFitted
 
     def _abort(self):
@@ -244,12 +244,12 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
         '''
 
         if index == 0:
-            self.data = np.array(dataIn, dtype=float) # ju#pointcoordinates
+            self.data = np.array(dataIn, dtype=float)  # ju#pointcoordinates
         elif index == 1:
-            self.slaveGF = dataIn   # ju#fieldworkmodel
+            self.slaveGF = dataIn  # ju#fieldworkmodel
             self.slaveGFUnfitted = copy.deepcopy(self.slaveGF)
         elif index == 2:
-            self.dataWeights = np.array(dataIn, dtype=float) # numpyarray1d - dataWeights
+            self.dataWeights = np.array(dataIn, dtype=float)  # numpyarray1d - dataWeights
         else:
             self.hostGF = dataIn
             self.hostGFUnfitted = copy.deepcopy(self.hostGF)
@@ -262,15 +262,15 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
         provides port for this step then the index can be ignored.
         '''
         if index == 4:
-            return self.slaveGFFitted       # ju#fieldworkmodel
+            return self.slaveGFFitted  # ju#fieldworkmodel
         elif index == 5:
-            return self.slaveGFParamsFitted # ju#fieldworkmodelparameters
+            return self.slaveGFParamsFitted  # ju#fieldworkmodelparameters
         elif index == 6:
-            return self.RMSEFitted            # float
+            return self.RMSEFitted  # float
         elif index == 7:
-            return self.fitErrors           # numpyarray1d
+            return self.fitErrors  # numpyarray1d
         else:
-            return self.hostGFFitted        # ju#fieldworkmodel
+            return self.hostGFFitted  # ju#fieldworkmodel
 
     def configure(self):
         '''
@@ -280,15 +280,15 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
         then set:
             self._configured = True
         '''
-        dlg = ConfigureDialog()
+        dlg = ConfigureDialog(self._main_window)
         dlg.identifierOccursCount = self._identifierOccursCount
         dlg.setConfig(self._config)
         dlg.validate()
         dlg.setModal(True)
-        
+
         if dlg.exec_():
             self._config = dlg.getConfig()
-        
+
         self._configured = dlg.validate()
         self._configuredObserver()
 
@@ -322,5 +322,3 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
         d.identifierOccursCount = self._identifierOccursCount
         d.setConfig(self._config)
         self._configured = d.validate()
-
-
