@@ -197,7 +197,7 @@ class MayaviHostMeshFittingViewerWidget(QDialog):
         if tableItem.column() == self.objectTableHeaderColumns['visible']:
             # get visible status
             name = tableItem.text()
-            visible = tableItem.checkState().name == 'Checked'
+            visible = tableItem.checkState() == Qt.CheckState.Checked
 
             print('visibleboxchanged name', name)
             print('visibleboxchanged visible', visible)
@@ -316,7 +316,7 @@ class MayaviHostMeshFittingViewerWidget(QDialog):
         for r in range(self._ui.tableWidget.rowCount()):
             tableItem = self._ui.tableWidget.item(r, self.objectTableHeaderColumns['visible'])
             name = tableItem.text()
-            visible = tableItem.checkState().name == 'Checked'
+            visible = tableItem.checkState() == Qt.CheckState.Checked
             obj = self._objects.getObject(name)
             print(obj.name)
             if obj.sceneObject:
