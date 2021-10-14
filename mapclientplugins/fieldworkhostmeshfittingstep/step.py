@@ -23,7 +23,6 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
     """
 
     _configDefaults = {}
-    _configDefaults['identifier'] = ''
     _configDefaults['GUI'] = 'True'
     _configDefaults['fit mode'] = 'DPEP'
     _configDefaults['host element type'] = 'quad444'
@@ -41,8 +40,9 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
 
     def __init__(self, location):
         super(FieldworkHostMeshFittingStep, self).__init__('Fieldwork Host Mesh Fitting', location)
-        self._configured = False  # A step cannot be executed until it has been configured.
+        self._configured = True  # A step cannot be executed until it has been configured.
         self._category = 'Fitting'
+        self._identifier = ''
         # Add any other initialisation code here:
         self._icon = QtGui.QImage(':/fieldworkhostmeshfittingstep/images/fieldworkhostmeshfittingicon.png')
         # Ports:
@@ -279,7 +279,6 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
             self._configured = True
         '''
         dlg = ConfigureDialog(self._main_window)
-        dlg.identifierOccursCount = self._identifierOccursCount
         dlg.setConfig(self._config)
         dlg.validate()
         dlg.setModal(True)
@@ -294,13 +293,13 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
         '''
         The identifier is a string that must be unique within a workflow.
         '''
-        return self._config['identifier']
+        return self._identifier
 
     def setIdentifier(self, identifier):
         '''
         The framework will set the identifier for this step when it is loaded.
         '''
-        self._config['identifier'] = identifier
+        self._identifier = identifier
 
     def serialize(self):
         '''
@@ -317,6 +316,5 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
         self._config.update(json.loads(string))
 
         d = ConfigureDialog()
-        d.identifierOccursCount = self._identifierOccursCount
         d.setConfig(self._config)
         self._configured = d.validate()
