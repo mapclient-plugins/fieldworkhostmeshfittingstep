@@ -235,11 +235,11 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
         # self._genHostGF = True
 
     def setPortData(self, index, dataIn):
-        '''
+        """
         Add your code here that will set the appropriate objects for this step.
         The index is the index of the port in the port list.  If there is only one
         uses port for this step then the index can be ignored.
-        '''
+        """
 
         if index == 0:
             self.data = np.array(dataIn, dtype=float)  # ju#pointcoordinates
@@ -254,11 +254,11 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
             self._genHostGF = False
 
     def getPortData(self, index):
-        '''
+        """
         Add your code here that will return the appropriate objects for this step.
         The index is the index of the port in the port list.  If there is only one
         provides port for this step then the index can be ignored.
-        '''
+        """
         if index == 4:
             return self.slaveGFFitted  # ju#fieldworkmodel
         elif index == 5:
@@ -271,13 +271,13 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
             return self.hostGFFitted  # ju#fieldworkmodel
 
     def configure(self):
-        '''
+        """
         This function will be called when the configure icon on the step is
         clicked.  It is appropriate to display a configuration dialog at this
         time.  If the conditions for the configuration of this step are complete
         then set:
             self._configured = True
-        '''
+        """
         dlg = ConfigureDialog(self._main_window)
         dlg.setConfig(self._config)
         dlg.validate()
@@ -290,29 +290,29 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
         self._configuredObserver()
 
     def getIdentifier(self):
-        '''
+        """
         The identifier is a string that must be unique within a workflow.
-        '''
+        """
         return self._identifier
 
     def setIdentifier(self, identifier):
-        '''
+        """
         The framework will set the identifier for this step when it is loaded.
-        '''
+        """
         self._identifier = identifier
 
     def serialize(self):
-        '''
+        """
         Add code to serialize this step to disk. Returns a json string for
         mapclient to serialise.
-        '''
+        """
         return json.dumps(self._config, default=lambda o: o.__dict__, sort_keys=True, indent=4)
 
     def deserialize(self, string):
-        '''
+        """
         Add code to deserialize this step from disk. Parses a json string
         given by mapclient
-        '''
+        """
         self._config.update(json.loads(string))
 
         d = ConfigureDialog()
