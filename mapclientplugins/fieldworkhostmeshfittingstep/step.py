@@ -1,7 +1,6 @@
-'''
+"""
 MAP Client Plugin Step
-'''
-import os
+"""
 import json
 
 from PySide2 import QtGui
@@ -18,10 +17,10 @@ import numpy as np
 
 
 class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
-    '''
+    """
     Skeleton step which is intended to be a helpful starting point
     for new steps.
-    '''
+    """
 
     _configDefaults = {}
     _configDefaults['identifier'] = ''
@@ -114,11 +113,11 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
         self._widget = None
 
     def execute(self):
-        '''
+        """
         Add your code here that will kick off the execution of the step.
         Make sure you call the _doneExecution() method when finished.  This method
         may be connected up to a button in a widget for example.
-        '''
+        """
         # Put your execute step code here before calling the '_doneExecution' method.
 
         if self._config['GUI'] == 'True':
