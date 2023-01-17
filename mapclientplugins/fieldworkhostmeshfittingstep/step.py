@@ -172,16 +172,16 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
         # make slave obj
         if args['fit mode'] == 'DPEP':
             slaveGObj = GFF.makeObjDPEP(self.slaveGF, self.data, args['slave mesh discretisation'],
-                                        nClosestPoints=args['n closest points'],
-                                        treeArgs=args['kdtree args'])
+                                        n_closest_points=args['n closest points'],
+                                        tree_args=args['kdtree args'])
         elif args['fit mode'] == 'EPDP':
             slaveGObj = GFF.makeObjEPDP(self.slaveGF, self.data, args['slave mesh discretisation'],
-                                        nClosestPoints=args['n closest points'],
-                                        treeArgs=args['kdtree args'])
+                                        n_closest_points=args['n closest points'],
+                                        tree_args=args['kdtree args'])
         elif args['fit mode'] == '2way':
             slaveGObj = GFF.makeObj2Way(self.slaveGF, self.data, args['slave mesh discretisation'],
-                                        nClosestPoints=args['n closest points'],
-                                        treeArgs=args['kdtree args'])
+                                        n_closest_points=args['n closest points'],
+                                        tree_args=args['kdtree args'])
 
         slaveSobObj = GFF.makeSobelovPenalty2D(self.slaveGF, args['slave sobelov discretisation'],
                                                args['slave sobelov weight'])
@@ -198,9 +198,9 @@ class FieldworkHostMeshFittingStep(WorkflowStepMountPoint):
         hostParamsOpt, slaveParamsOpt, \
         slaveXi, RMSEFitted = fitting_tools.hostMeshFitMulti(
             self.hostGF, self.slaveGF, slaveObj,
-            maxIt=args['max iterations'],
-            sobD=args['host sobelov discretisation'],
-            sobW=args['host sobelov weight'],
+            max_it=args['max iterations'],
+            sob_d=args['host sobelov discretisation'],
+            sob_w=args['host sobelov weight'],
             verbose=args['verbose'],
             xtol=1e-6,
         )

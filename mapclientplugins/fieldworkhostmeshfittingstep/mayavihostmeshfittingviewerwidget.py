@@ -96,21 +96,21 @@ class MayaviHostMeshFittingViewerWidget(QDialog):
         # create self._objects
         self._objects = MayaviViewerObjectsContainer()
         self._objects.addObject('data', MayaviViewerDataPoints('data', self._data, \
-                                                               renderArgs=self._dataRenderArgs))
+                                                               render_args=self._dataRenderArgs))
         self._objects.addObject('slave GF Unfitted', \
                                 MayaviViewerFieldworkModel('slave GF Unfitted', self._slaveGFUnfitted, self._GFD, \
-                                                           renderArgs=self._slaveGFUnfittedRenderArgs))
+                                                           render_args=self._slaveGFUnfittedRenderArgs))
         self._objects.addObject('slave GF Fitted', \
                                 MayaviViewerFieldworkModel('slave GF Fitted', self._slaveGFFitted, self._GFD, \
-                                                           renderArgs=self._slaveGFFittedRenderArgs))
+                                                           render_args=self._slaveGFFittedRenderArgs))
 
         if self._renderHost:
             self._objects.addObject('host GF Unfitted', \
                                     MayaviViewerFieldworkModel('host GF Unfitted', self._hostGFUnfitted, self._GFD, \
-                                                               renderArgs=self._hostGFUnfittedRenderArgs))
+                                                               render_args=self._hostGFUnfittedRenderArgs))
             self._objects.addObject('host GF Fitted', \
                                     MayaviViewerFieldworkModel('host GF Fitted', self._hostGFFitted, self._GFD, \
-                                                               renderArgs=self._hostGFFittedRenderArgs))
+                                                               render_args=self._hostGFFittedRenderArgs))
 
         self._makeConnections()
         self._initialiseObjectTable()
