@@ -21,9 +21,9 @@ import os
 
 os.environ['ETS_TOOLKIT'] = 'qt4'
 
-from PySide2.QtWidgets import QDialog, QAbstractItemView, QTableWidgetItem
-from PySide2.QtCore import Qt
-from PySide2.QtCore import QThread, Signal
+from PySide6.QtWidgets import QDialog, QAbstractItemView, QTableWidgetItem
+from PySide6.QtCore import Qt
+from PySide6.QtCore import QThread, Signal
 
 from mapclientplugins.fieldworkhostmeshfittingstep.ui_mayavihostmeshfittingviewerwidget import Ui_Dialog
 from traits.api import HasTraits, Instance, on_trait_change, \
