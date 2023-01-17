@@ -29,8 +29,8 @@ from mapclientplugins.fieldworkhostmeshfittingstep.ui_mayavihostmeshfittingviewe
 from traits.api import HasTraits, Instance, on_trait_change, \
     Int, Dict
 
-from gias2.mappluginutils.mayaviviewer import MayaviViewerObjectsContainer, MayaviViewerDataPoints, \
-    MayaviViewerFieldworkModel, colours
+from gias3.mapclientpluginutilities.viewers import MayaviViewerObjectsContainer, MayaviViewerFieldworkModel, colours
+from gias3.mapclientpluginutilities.viewers.mayaviviewerdatapoints import MayaviViewerDataPoints
 
 import copy
 

@@ -11,22 +11,23 @@ and other organs. Biomech Model Mechanobiol, 2(3), 139-155.
 
 Requires
 --------
-- GIAS2 : https://bitbucket.org/jangle/gias2
+- GIAS3 - Fieldwork : https://github.com/musculoskeletal/gias3.fieldwork
+- GIAS3 - MAP Client Plugin Utilities : https://github.com/musculoskeletal/gias3.mapclientpluginutilities
 
 Inputs
 ------
 - **pointcloud** [nx3 NumPy Array] : The target point cloud.
-- **fieldworkmodel** [GIAS2 GeometricField instance] : The source Fieldwork mesh to be registered.
+- **fieldworkmodel** [GIAS3 GeometricField instance] : The source Fieldwork mesh to be registered.
 - **array1d** [1-D NumPy Array] : An array of weights for each target point.
-- **fieldworkmodel** [GIAS2 GeometricField instance][Optional] : The host-mesh to use in the registration. If not provided, a  global-axis-aligned host-mesh of the configured type is automatically generated around the input slave mesh.
+- **fieldworkmodel** [GIAS3 GeometricField instance][Optional] : The host-mesh to use in the registration. If not provided, a  global-axis-aligned host-mesh of the configured type is automatically generated around the input slave mesh.
 
 Outputs
 -------
-- **fieldworkmodel** [GIAS2 GeometricField instance] : The registered slave mesh.
+- **fieldworkmodel** [GIAS3 GeometricField instance] : The registered slave mesh.
 - **fieldworkmodelparameters** [NumPy Array] : An array of the registered slave mesh parameters.
 - **float** [float] : The registration error in terms of the root-mean-squared Euclidean distance between the target points and the registered slave mesh.
 - **array1d** [1-D NumPy Array] : An array of the Euclidean distance between each target point and its closest point on the registered slave mesh.
-- **fieldworkmodel** [GIAS2 GeometricField instance] : The registered host mesh.
+- **fieldworkmodel** [GIAS3 GeometricField instance] : The registered host mesh.
 
 Configuration
 -------------

@@ -12,8 +12,8 @@ from mapclientplugins.fieldworkhostmeshfittingstep.mayavihostmeshfittingviewerwi
     MayaviHostMeshFittingViewerWidget
 
 import copy
-from gias2.fieldwork.field.tools import fitting_tools
-from gias2.fieldwork.field import geometric_field_fitter as GFF
+from gias3.fieldwork.field.tools import fitting_tools
+from gias3.fieldwork.field import geometric_field_fitter as GFF
 import numpy as np
 
 
