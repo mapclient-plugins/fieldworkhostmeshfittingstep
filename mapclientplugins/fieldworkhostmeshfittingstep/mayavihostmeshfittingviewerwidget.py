@@ -19,7 +19,7 @@ This file is part of MAP Client. (http://launchpad.net/mapclient)
 '''
 import os
 
-os.environ['ETS_TOOLKIT'] = 'qt4'
+os.environ['ETS_TOOLKIT'] = 'qt'
 
 from PySide6.QtWidgets import QDialog, QAbstractItemView, QTableWidgetItem
 from PySide6.QtCore import Qt
